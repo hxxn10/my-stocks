@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10141d">
+<meta name="description" content="보유 주식 현황을 한눈에 보는 개인용 대시보드">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>내 주식 대시보드</title>
+<style>
+:root{color-scheme:dark;--bg:#0d1119;--panel:#171e2b;--panel2:#202a3a;--line:#2a3547;--muted:#91a0b6;--text:#eef3fb;--green:#31c48d;--red:#ff6675;--blue:#8baeff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#172238 0,#0d1119 48%);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+header{padding:22px max(18px,calc((100% - 1180px)/2));border-bottom:1px solid #ffffff12;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-weight:800;font-size:20px;letter-spacing:-.5px}.brand span{color:var(--green)}.sub{color:var(--muted);font-size:12px}
+main{max-width:1180px;margin:24px auto;padding:0 18px 50px}.topline{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+h1{font-size:25px;margin:0 0 4px;letter-spacing:-.8px}h2{font-size:16px;margin:0 0 14px}.muted{color:var(--muted)}.tiny{font-size:12px;color:var(--muted)}
+button,select,input{font:inherit;color:inherit}button{border:1px solid var(--line);background:var(--panel2);border-radius:11px;padding:10px 14px;cursor:pointer}button.primary{background:var(--green);color:#071a13;border:0;font-weight:800}button.ghost{background:transparent}button.danger{color:#ff8a95}button:active{transform:translateY(1px)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.stat,.panel,.stock-card{background:linear-gradient(145deg,#1a2332,#141b27);border:1px solid var(--line);border-radius:17px;padding:17px;box-shadow:0 12px 30px #0002}
+.stat .label{font-size:12px;color:var(--muted)}.stat .value{font-size:23px;font-weight:800;margin-top:5px;letter-spacing:-.6px}.stat .hint{font-size:12px;margin-top:3px}
+.positive{color:var(--green)!important}.negative{color:var(--red)!important}
+.content{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-bottom:14px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stock-card{padding:15px;min-width:0}.stock-head{display:flex;justify-content:space-between;gap:8px}.stock-name{font-weight:800}.symbol{font-size:11px;color:var(--muted)}.price{font-size:22px;font-weight:800;margin:12px 0 0}.spark{width:100%;height:52px;margin-top:8px;display:block}.spark polyline{fill:none;stroke:var(--blue);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}.toolbar select,.field input,.field select{background:#101723;border:1px solid var(--line);border-radius:10px;padding:10px;width:100%;outline:none}.toolbar select{width:auto;min-width:145px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:right;padding:12px 8px;border-bottom:1px solid #ffffff10;white-space:nowrap}th:first-child,td:first-child{text-align:left}th{color:var(--muted);font-weight:600;font-size:11px}.table-wrap{overflow:auto}
+.actions{display:flex;gap:6px;justify-content:flex-end}.actions button{padding:6px 9px;font-size:12px}
+.notice{border:1px solid #8baeff44;background:#8baeff0c;border-radius:13px;padding:12px 14px;color:#c8d7f6;font-size:12px;margin:14px 0}
+.tabs{display:flex;gap:7px;margin:16px 0}.tab{padding:8px 13px;border-radius:10px}.tab.active{background:#2c3b53;border-color:#52698c}
+.modal{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}.modal.open{display:flex}.dialog{width:min(540px,100%);max-height:90vh;overflow:auto;background:#151e2c;border:1px solid var(--line);border-radius:18px;padding:20px}.dialog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted)}.field.full{grid-column:1/-1}.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.empty{text-align:center;padding:30px;color:var(--muted)}.hidden{display:none!important}.pill{font-size:10px;padding:3px 7px;border-radius:99px;background:#27354a;color:#c8d7f6}
+footer{max-width:1180px;margin:0 auto;padding:0 18px 30px;color:var(--muted);font-size:11px}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.content{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){header{padding:16px}.grid{gap:8px}.stat{padding:13px}.stat .value{font-size:18px}.cards{grid-template-columns:1fr 1fr}.stock-card{padding:12px}.price{font-size:18px}main{margin-top:18px;padding:0 12px 36px}.topline h1{font-size:22px}.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.desktop-only{display:none}}
+</style>
+</head>
+<body>
+<header><div><div class="brand">MY <span>STOCKS</span></div><div class="sub">개인 주식 현황 대시보드</div></div><div class="toolbar" style="margin:0"><span class="pill" id="syncState">이 기기에 저장 중</span><button class="ghost" id="settingsBtn">설정</button><button class="primary" id="addBtn">＋ 종목 추가</button></div></header>
+<main>
+ <div class="topline"><div><h1>내 투자 현황</h1><div class="tiny" id="updatedAt">마지막 수정: -</div></div><div class="toolbar" style="margin:0"><select id="accountFilter"><option value="all">모든 계좌</option></select><button id="exportBtn">백업 내보내기</button><button id="importBtn">백업 가져오기</button><input id="importFile" type="file" accept="application/json" class="hidden"></div></div>
+ <section class="grid">
+  <div class="stat"><div class="label">총 평가금액 (통화별)</div><div class="value" id="totalValue">-</div><div class="hint muted">KRW / USD 별도 합산</div></div>
+  <div class="stat"><div class="label">총 매수금액</div><div class="value" id="totalCost">-</div><div class="hint muted">등록된 보유 수량 기준</div></div>
+  <div class="stat"><div class="label">평가손익</div><div class="value" id="totalProfit">-</div><div class="hint" id="totalRate">-</div></div>
+  <div class="stat"><div class="label">보유 종목</div><div class="value" id="stockCount">0</div><div class="hint muted">선택한 계좌 기준</div></div>
+ </section>
+ <section class="content">
+  <div class="panel"><h2>주요 보유 종목 <span class="tiny">· 상위 3개</span></h2><div class="cards" id="featured"></div></div>
+  <div class="panel"><h2>계좌 및 시세 연결</h2><div id="brokerSummary" class="tiny">증권사를 아직 선택하지 않았습니다.</div><div class="notice">현재 버전은 보유 종목과 가격을 직접 입력하는 프로토타입입니다. 실시간 시세 및 증권사 계좌 자동연동은 각 제공사의 공식 API와 서버 연결이 추가되어야 작동합니다.</div><button id="manageBrokerBtn">증권사 / 계좌 설정</button></div>
+ </section>
+ <section class="panel"><div class="topline"><div><h2 style="margin:0">전체 보유 종목</h2><div class="tiny">가격과 수량을 수정하면 손익이 자동 계산됩니다.</div></div><select id="sortSelect"><option value="value">평가금액 순</option><option value="profit">손익 순</option><option value="name">이름 순</option></select></div>
+  <div class="table-wrap"><table><thead><tr><th>종목</th><th>현재가</th><th>보유 수량</th><th>평가금액</th><th>평가손익</th><th>수익률</th><th>관리</th></tr></thead><tbody id="stockRows"></tbody></table></div><div class="empty hidden" id="emptyState">등록된 종목이 없습니다. ‘종목 추가’를 눌러 시작하세요.</div>
+ </section>
+ <div class="notice">참고: 주식의 초록색·빨간색 표시는 손익 기준입니다. 이 화면은 투자 판단이나 매매를 자동으로 수행하지 않으며, 표시된 값은 입력한 정보에 따라 계산됩니다.</div>
+</main>
+<footer>데이터는 기본적으로 이 브라우저에 저장됩니다. 다른 기기와 동기화하려면 로그인 기반 클라우드 저장소 연결 및 HTTPS 배포가 필요합니다.</footer>
+
+<div class="modal" id="stockModal"><div class="dialog"><div class="dialog-head"><h2 id="stockModalTitle">종목 추가</h2><button class="ghost" data-close="stockModal">닫기</button></div>
+<form id="stockForm"><input type="hidden" id="stockId"><div class="formgrid">
+<label class="field">종목명<input id="name" required placeholder="예: 삼성전자"></label>
+<label class="field">종목 코드<input id="symbol" placeholder="예: 005930"></label>
+<label class="field">시장 / 통화<select id="currency"><option value="KRW">한국 주식 · KRW</option><option value="USD">미국 주식 · USD</option></select></label>
+<label class="field">계좌<select id="stockAccount"></select></label>
+<label class="field">보유 수량<input id="quantity" type="number" min="0" step="any" required placeholder="예: 10"></label>
+<label class="field">평균 매수가<input id="avgPrice" type="number" min="0" step="any" required placeholder="예: 70000"></label>
+<label class="field">현재가<input id="currentPrice" type="number" min="0" step="any" required placeholder="예: 72000"></label>
+<label class="field">차트 표시용 이전 가격<input id="previousPrice" type="number" min="0" step="any" placeholder="선택 사항"></label>
+</div><div class="form-actions"><button type="button" data-close="stockModal">취소</button><button class="primary" type="submit">저장</button></div></form></div></div>
+
+<div class="modal" id="settingsModal"><div class="dialog"><div class="dialog-head"><h2>설정</h2><button class="ghost" data-close="settingsModal">닫기</button></div>
+<div class="field full">증권사 선택 (나중에 변경 가능)<select id="brokerSelect"><option value="">미선택</option><option>키움증권</option><option>삼성증권</option><option>미래에셋증권</option><option>한국투자증권</option><option>NH투자증권</option><option>KB증권</option><option>토스증권</option><option>신한투자증권</option><option>기타</option></select></div>
+<div class="notice">증권사를 선택해도 자동 로그인이나 계좌 연결이 즉시 되지는 않습니다. 해당 증권사의 공식 연동 API, 사용자 인증, 서버 설정이 준비되면 이 화면에서 연결 기능을 붙일 수 있도록 구성했습니다. 계좌 비밀번호나 OTP를 이 파일에 입력하지 마세요.</div>
+<h2 style="margin-top:18px">계좌 목록</h2><div id="accountList"></div><div class="toolbar"><input id="newAccountName" placeholder="계좌 별칭 (예: 국내 주식)" style="flex:1;min-width:0;background:#101723;border:1px solid var(--line);border-radius:10px;padding:10px"><button id="addAccountBtn">계좌 추가</button></div>
+<div class="form-actions"><button class="primary" id="saveSettingsBtn">설정 저장</button></div></div></div>
+
+<script>
+const KEY='myStocksDashboard_v2';
+const defaultData={broker:'',accounts:[{id:'main',name:'기본 계좌'}],stocks:[]};
+let data=load();
+function load(){try{return {...defaultData,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{return structuredClone(defaultData)}}
+function save(){localStorage.setItem(KEY,JSON.stringify(data));document.getElementById('updatedAt').textContent='마지막 수정: '+new Date().toLocaleString('ko-KR');render()}
+const $=id=>document.getElementById(id);
+const money=(n,c)=>new Intl.NumberFormat('ko-KR',{style:'currency',currency:c,maximumFractionDigits:c==='KRW'?0:2}).format(n||0);
+const fmt=(n)=>new Intl.NumberFormat('ko-KR',{maximumFractionDigits:2}).format(n||0);
+const calc=s=>({value:s.quantity*s.currentPrice,cost:s.quantity*s.avgPrice,profit:s.quantity*(s.currentPrice-s.avgPrice),rate:s.avgPrice?((s.currentPrice-s.avgPrice)/s.avgPrice*100):0});
+function selected(){let f=$('accountFilter').value;return data.stocks.filter(s=>f==='all'||s.accountId===f)}
+function fillAccounts(){let opts='<option value="all">모든 계좌</option>'+data.accounts.map(a=>`<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('');let old=$('accountFilter').value;$('accountFilter').innerHTML=opts;$('accountFilter').value=[...$('accountFilter').options].some(o=>o.value===old)?old:'all';$('stockAccount').innerHTML=data.accounts.map(a=>`<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('')}
+function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function render(){
+ fillAccounts();let list=selected(),by={KRW:{v:0,c:0,p:0},USD:{v:0,c:0,p:0}};
+ list.forEach(s=>{let x=calc(s);let b=by[s.currency]||by.KRW;b.v+=x.value;b.c+=x.cost;b.p+=x.profit});
+ $('totalValue').textContent=`₩${fmt(by.KRW.v)} · $${fmt(by.USD.v)}`;$('totalCost').textContent=`₩${fmt(by.KRW.c)} · $${fmt(by.USD.c)}`;
+ let p=by.KRW.p+by.USD.p;$('totalProfit').textContent=`₩${fmt(by.KRW.p)} · $${fmt(by.USD.p)}`;$('totalProfit').className='value '+(p>=0?'positive':'negative');
+ let cost=by.KRW.c+by.USD.c;$('totalRate').textContent='통화별 손익률: '+(by.KRW.c?((by.KRW.p/by.KRW.c)*100).toFixed(2)+'% KRW ':'')+(by.USD.c?((by.USD.p/by.USD.c)*100).toFixed(2)+'% USD':'');$('totalRate').className='hint '+(p>=0?'positive':'negative');
+ $('stockCount').textContent=list.length+'개';let sorted=[...list].sort((a,b)=>calc(b).value-calc(a).value);
+ $('featured').innerHTML=sorted.slice(0,3).map(s=>{let x=calc(s),up=s.currentPrice>=s.avgPrice;let prev=Number(s.previousPrice)||s.avgPrice;let pts=[prev*.98,prev*.99,prev,s.currentPrice*.995,s.currentPrice];let min=Math.min(...pts),max=Math.max(...pts),coords=pts.map((v,i)=>`${i*25},${42-(v-min)/(max-min||1)*34}`).join(' ');return `<div class="stock-card"><div class="stock-head"><div><div class="stock-name">${esc(s.name)}</div><div class="symbol">${esc(s.symbol||'')} · ${s.currency}</div></div><span class="pill">${up?'상승':'하락'}</span></div><div class="price">${money(s.currentPrice,s.currency)}</div><div class="${up?'positive':'negative'} tiny">${x.rate>=0?'+':''}${x.rate.toFixed(2)}% · 손익 ${money(x.profit,s.currency)}</div><svg class="spark" viewBox="0 0 100 50" preserveAspectRatio="none"><polyline points="${coords}"/></svg></div>`}).join('')||'<div class="empty">종목을 추가하면 여기에 표시됩니다.</div>';
+ let sort=$('sortSelect').value;let rows=[...list].sort((a,b)=>sort==='name'?a.name.localeCompare(b.name):sort==='profit'?calc(b).profit-calc(a).profit:calc(b).value-calc(a).value);
+ $('stockRows').innerHTML=rows.map(s=>{let x=calc(s);return `<tr><td><b>${esc(s.name)}</b><div class="symbol">${esc(s.symbol||'')} · ${esc(data.accounts.find(a=>a.id===s.accountId)?.name||'')}</div></td><td>${money(s.currentPrice,s.currency)}</td><td>${fmt(s.quantity)}</td><td>${money(x.value,s.currency)}</td><td class="${x.profit>=0?'positive':'negative'}">${x.profit>=0?'+':''}${money(x.profit,s.currency)}</td><td class="${x.rate>=0?'positive':'negative'}">${x.rate>=0?'+':''}${x.rate.toFixed(2)}%</td><td><div class="actions"><button data-edit="${s.id}">수정</button><button class="danger" data-delete="${s.id}">삭제</button></div></td></tr>`}).join('');
+ $('emptyState').classList.toggle('hidden',rows.length>0);$('brokerSummary').textContent=data.broker?`선택된 증권사: ${data.broker} · 계좌 ${data.accounts.length}개 · 현재 수동 등록 모드`:'증권사 미선택 · 계좌 별칭과 종목은 먼저 직접 등록할 수 있습니다.';$('syncState').textContent='이 기기에 저장 중';
+}
+function openStock(s){$('stockForm').reset();$('stockId').value=s?.id||'';$('stockModalTitle').textContent=s?'종목 수정':'종목 추가';if(s){for(let k of ['name','symbol','currency','quantity','avgPrice','currentPrice','previousPrice'])$(k).value=s[k]??'';$('stockAccount').value=s.accountId}else{$('stockAccount').value=data.accounts[0]?.id||'';$('currency').value='KRW'}$('stockModal').classList.add('open')}
+$('addBtn').onclick=()=>openStock();$('stockRows').onclick=e=>{let edit=e.target.dataset.edit,del=e.target.dataset.delete;if(edit){let s=data.stocks.find(x=>x.id===edit);if(s)openStock(s)}if(del&&confirm('이 종목을 삭제할까요?')){data.stocks=data.stocks.filter(x=>x.id!==del);save()}};
+$('stockForm').onsubmit=e=>{e.preventDefault();let id=$('stockId').value||crypto.randomUUID();let s={id,name:$('name').value.trim(),symbol:$('symbol').value.trim(),currency:$('currency').value,accountId:$('stockAccount').value,quantity:Number($('quantity').value),avgPrice:Number($('avgPrice').value),currentPrice:Number($('currentPrice').value),previousPrice:Number($('previousPrice').value)||Number($('avgPrice').value)};let i=data.stocks.findIndex(x=>x.id===id);if(i>=0)data.stocks[i]=s;else data.stocks.push(s);$('stockModal').classList.remove('open');save()};
+$('settingsBtn').onclick=$('manageBrokerBtn').onclick=()=>{ $('brokerSelect').value=data.broker||'';renderAccounts();$('settingsModal').classList.add('open')};
+function renderAccounts(){$('accountList').innerHTML=data.accounts.map(a=>`<div class="toolbar"><span style="flex:1">${esc(a.name)}</span><button class="danger" data-remove-account="${a.id}">삭제</button></div>`).join('')}
+$('accountList').onclick=e=>{let id=e.target.dataset.removeAccount;if(id){if(data.stocks.some(s=>s.accountId===id)){alert('이 계좌에 등록된 종목이 있어 삭제할 수 없습니다. 종목을 먼저 다른 계좌로 옮기거나 삭제하세요.');return}if(data.accounts.length===1){alert('계좌는 최소 1개가 필요합니다.');return}data.accounts=data.accounts.filter(a=>a.id!==id);renderAccounts()}};
+$('addAccountBtn').onclick=()=>{let n=$('newAccountName').value.trim();if(!n)return;data.accounts.push({id:crypto.randomUUID(),name:n});$('newAccountName').value='';renderAccounts()};
+$('saveSettingsBtn').onclick=()=>{data.broker=$('brokerSelect').value;$('settingsModal').classList.remove('open');save()};
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$ (b.dataset.close).classList.remove('open'));
+$('accountFilter').onchange=render;$('sortSelect').onchange=render;
+$('exportBtn').onclick=()=>{let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='my-stocks-backup.json';a.click();URL.revokeObjectURL(a.href)};
+$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{try{let obj=JSON.parse(await e.target.files[0].text());if(!Array.isArray(obj.accounts)||!Array.isArray(obj.stocks))throw Error();data={...defaultData,...obj};save();alert('백업을 가져왔습니다.')}catch{alert('올바른 백업 파일이 아닙니다.')}e.target.value=''};
+render();if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>
